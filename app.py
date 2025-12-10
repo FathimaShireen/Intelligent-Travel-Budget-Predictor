@@ -3,7 +3,7 @@ import pandas as pd
 import joblib
 
 # ==========================================
-# 1. LOAD TRAINED MODELS & SCALER
+# LOAD TRAINED MODELS & SCALER
 # ==========================================
 @st.cache_resource
 def load_models():
@@ -14,9 +14,6 @@ def load_models():
 
 reg_model, clf_model, scaler = load_models()
 
-# ==========================================
-# 2. FEATURE COLUMNS (MUST MATCH TRAINING)
-# ==========================================
 feature_cols = [
     'City',
     'Season',
@@ -88,7 +85,7 @@ cost_code_to_label = {
 }
 
 # ==========================================
-# 4. STREAMLIT UI
+# STREAMLIT UI
 # ==========================================
 st.set_page_config(page_title="Travel Cost Prediction", page_icon="✈️")
 st.title("✈️ Intelligent Travel Cost Predictor")
@@ -110,16 +107,12 @@ Daily_Transport_Cost = st.sidebar.number_input("Daily Transport Cost (₹)", min
 Activities_Count = st.sidebar.number_input("Activities Count", min_value=0, step=1, value=3)
 Shopping_Cost = st.sidebar.number_input("Shopping Cost (₹)", min_value=0.0, step=500.0)
 
-# ==========================================
-# 5. CONVERT NAMES → CODES (FOR MODEL)
-# ==========================================
 City = city_to_code[City_str]
 Season = season_to_code[Season_str]
 Flight_Type = flight_to_code[Flight_Type_str]
 Hotel_Class = hotel_to_code[Hotel_Class_str]
 Transport_Mode = transport_to_code[Transport_Mode_str]
 
-# Build dataframe in the same order as feature_cols
 user_df = pd.DataFrame([[
     City,
     Season,
@@ -136,11 +129,10 @@ user_df = pd.DataFrame([[
 ]], columns=feature_cols)
 
 
-# Scale with the same scaler used in training
 user_scaled = scaler.transform(user_df)
 
 # ==========================================
-# 6. PREDICTION
+# PREDICTION
 # ==========================================
 task = st.selectbox("What do you want to predict?", ["Total Trip Cost", "Cost Category", "Both"])
 
@@ -154,7 +146,7 @@ if st.button("Predict"):
 
     # Classification → Cost Category
     if task in ["Cost Category", "Both"]:
-        clf_pred_code = clf_model.predict(user_scaled)[0]  # e.g., 0/1/2
+        clf_pred_code = clf_model.predict(user_scaled)[0] 
         clf_label = cost_code_to_label.get(clf_pred_code, f" {clf_pred_code}")
         st.subheader("🏷 Expense Level")
         st.write(f"**Predicted Cost Category:** {clf_label}")
